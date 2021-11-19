@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using API.Dtos;
+using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
-using Infrastructure.Data;
+using Core.Specifications;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -13,35 +15,74 @@ namespace API.Controllers
     public class ProductsController : ControllerBase
 
     {
-        private readonly IProductRepository _repo;
 
-        public ProductsController(IProductRepository repo)
+        private readonly IGenericRepository<Products> _productsRepo;
+        private readonly IGenericRepository<ProductBrand> _brandsRepo;
+        private readonly IGenericRepository<ProductType> _typeRepo;
+        private readonly IMapper _mapper;
+
+        public ProductsController(IGenericRepository<Products> productsRepo, IGenericRepository<ProductBrand> brandsRepo,
+        IGenericRepository<ProductType> typeRepo, IMapper mapper)
         {
-            _repo = repo;
+            _mapper = mapper;
+            _typeRepo = typeRepo;
+            _brandsRepo = brandsRepo;
+            _productsRepo = productsRepo;
+
+
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Products>>> GetProducts()
+        public async Task<ActionResult<List<ProductToReturnDto>>> GetProducts()
         {
-            var products = await _repo.GetProductsAsync();
-            return Ok(products);
+            var spec = new ProductsWithTypesAndBrandsSpecification();
+            var product = await _productsRepo.ListAsync(spec);
+            // return product.Select(product => new ProductToReturnDto
+            // {
+            //     Id = product.Id,
+            //     Name = product.Name,
+            //     Description = product.Description,
+            //     Price = product.Price,
+            //     PictureUrl = product.PictureUrl,
+            //     ProductBrand = product.ProductBrand.Name,
+            //     ProductType = product.ProductType.Name
+            // }).ToList();
+            return Ok(_mapper
+                .Map<IReadOnlyList<Products>,IReadOnlyList<ProductToReturnDto>>(product));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Products>> GetProduct(int id)
+        public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
-            return await _repo.GetProductByIdAsync(id);
+            var spec = new ProductsWithTypesAndBrandsSpecification(id);
+            var product = await _productsRepo.GetEntityWithSpec(spec);
+
+            //mappings to dtos to return flat objects.
+            // return new ProductToReturnDto
+            // {
+            //     Id = product.Id,
+            //     Name = product.Name,
+            //     Description = product.Description,
+            //     Price = product.Price,
+            //     PictureUrl = product.PictureUrl,
+            //     ProductBrand = product.ProductBrand.Name,
+            //     ProductType = product.ProductType.Name
+            // };
+            //enables automapping 
+            return _mapper.Map<Products,ProductToReturnDto>(product);
+            ;
+
         }
 
         [HttpGet("brands")]
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetProductBrands()
         {
-            return Ok(await _repo.GetProductBrandsAsync());
+            return Ok(await _brandsRepo.ListAllAsync());
         }
         [HttpGet("types")]
         public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProductTypes()
         {
-            return Ok(await _repo.GetProductTypesAsync());
+            return Ok(await _typeRepo.ListAllAsync());
         }
 
 

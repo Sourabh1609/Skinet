@@ -4,7 +4,7 @@ namespace Core.Entities
 {
     public class Products : BaseEntity
     {
-        public String Name { get; set; }
+            public String Name { get; set; }
            public String Description { get; set; }
            public Decimal Price { get; set; }
            public String PictureUrl { get; set; }
