@@ -98,7 +98,7 @@ export class ShopComponent implements OnInit {
     this.searchTerm.nativeElement.value = '';
   }
   onReset(){
-    this.searchTerm.nativeElement.value = 'Search For Products..';
+    this.searchTerm.nativeElement.value = '';
     this.shopParams = new ShopParams(); 
     this.getProducts();
   }
