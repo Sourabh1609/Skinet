@@ -1,0 +1,19 @@
+.btn-group{
+    width:100%;
+}
+
+.btn{
+    width: 50%;
+}
+.cardanim{
+    overflow: hidden;
+    cursor: pointer;
+}
+img{
+    transition: transform .4s;
+}
+
+img:hover{
+    
+    transform: scale(1.15);
+}

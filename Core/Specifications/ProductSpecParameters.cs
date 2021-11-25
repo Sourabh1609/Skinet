@@ -11,7 +11,7 @@ namespace Core.Specifications
 
         public int PageIndex {get;set;} =1;
 
-        private int _pageSize=6;
+        private int _pageSize=9;
         //encapsulation
         public int PageSize{
             get => _pageSize;
