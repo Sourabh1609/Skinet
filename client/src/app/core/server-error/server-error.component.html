@@ -1,0 +1,17 @@
+<div class="container">
+     
+
+    <h1>
+      <span>500</span> <br />
+      Internal server error
+    </h1>
+    <p>We are currently trying to fix the problem.</p>
+    <ng-container *ngIf="error">
+        <h5 class="text-danger">
+            Error:{{error.message}}
+        </h5>
+        <p>Examine this request URL - make sure this is correct</p>
+         <code class="mt-5" style="background-color:whitesmoke">{{error.details}}</code>
+    </ng-container>
+    
+  </div>
